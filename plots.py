@@ -1,17 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from array import array
 from imgui.integrations.glfw import GlfwRenderer
-import waveprops as wp
+from math import sin, pi
+from random import random
+from time import time
 import OpenGL.GL as gl
 import glfw
 import imgui
 import sys
 
+
+C = 0.01
+L = int(pi * 2 * 100)
+
+
 def main():
-    # Init
     window = impl_glfw_init()
     imgui.create_context()
     impl = GlfwRenderer(window)
 
-    method_sel = 0
+    plot_values = array("f", [sin(x * C) for x in range(L)])
+    histogram_values = array("f", [random() for _ in range(20)])
+
     while not glfw.window_should_close(window):
         glfw.poll_events()
         impl.process_inputs()
@@ -19,15 +31,25 @@ def main():
         imgui.new_frame()
 
         imgui.begin("Plot example")
+        imgui.plot_lines(
+            "Sin(t)",
+            plot_values,
+            overlay_text="SIN() over time",
+            # offset by one item every milisecond, plot values
+            # buffer its end wraps around
+            values_offset=int(time() * 100) % L,
+            # 0=autoscale => (0, 50) = (autoscale width, 50px height)
+            graph_size=(0, 50),
+        )
 
-        if imgui.begin_combo("Método", wp.methods[method_sel]):
-            for i, item in enumerate(wp.methods):
-                is_selected = (i == method_sel)
-                if imgui.selectable(item, is_selected)[0]:
-                    method_sel = i
-                if is_selected:
-                    imgui.set_item_default_focus()
-            imgui.end_combo()
+        imgui.plot_histogram(
+            "histogram(random())",
+            histogram_values,
+            overlay_text="random histogram",
+            # offset by one item every milisecond, plot values
+            # buffer its end wraps around
+            graph_size=(0, 50),
+        )
 
         imgui.end()
 
@@ -40,6 +62,7 @@ def main():
 
     impl.shutdown()
     glfw.terminate()
+
 
 def impl_glfw_init():
     width, height = 1280, 720
@@ -66,6 +89,7 @@ def impl_glfw_init():
         sys.exit(1)
 
     return window
+
 
 if __name__ == "__main__":
     main()
