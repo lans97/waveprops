@@ -1,3 +1,4 @@
+from array import array
 from imgui.integrations.glfw import GlfwRenderer
 import waveprops as wp
 import OpenGL.GL as gl
@@ -11,7 +12,13 @@ def main():
     imgui.create_context()
     impl = GlfwRenderer(window)
 
-    method_sel = 0
+    method_sel = 8
+    opt_sel = 0
+    f = 450
+    hm = 1.5
+    hb = 30
+    pltf = 0.01
+    plot_values = array("f", [wp.method_func[wp.methods[method_sel]](wp.method_opts[wp.methods[method_sel]][opt_sel], f, hm, hb, d*pltf) for d in range(1, 200)]) #opt, f, hm, hb, d
     while not glfw.window_should_close(window):
         glfw.poll_events()
         impl.process_inputs()
@@ -20,14 +27,38 @@ def main():
 
         imgui.begin("Plot example")
 
+
+        imgui.plot_lines(
+                wp.methods[method_sel],
+                plot_values,
+                overlay_text="A(d)",
+                graph_size=(0, 400),
+        )
+
         if imgui.begin_combo("Método", wp.methods[method_sel]):
             for i, item in enumerate(wp.methods):
-                is_selected = (i == method_sel)
-                if imgui.selectable(item, is_selected)[0]:
+                m_is_selected = (i == method_sel)
+                if imgui.selectable(item, m_is_selected)[0]:
                     method_sel = i
-                if is_selected:
+                    opt_sel = 0
+                if m_is_selected:
                     imgui.set_item_default_focus()
             imgui.end_combo()
+
+        if imgui.begin_combo("Región", wp.method_opts[wp.methods[method_sel]][opt_sel]):
+            for i, item in enumerate(wp.method_opts[wp.methods[method_sel]]):
+                o_is_selected = (i == opt_sel)
+                if imgui.selectable(item, o_is_selected)[0]:
+                    opt_sel = i
+                if o_is_selected:
+                    imgui.set_item_default_focus()
+            imgui.end_combo()
+
+        changed_f, f = imgui.input_int("Frequency", f)
+        chagend_hm, hm = imgui.input_float("Altura Mobil", hm)
+        chagend_hb, hb = imgui.input_float("Altura Antena", hb)
+
+        plot_values = array("f", [wp.method_func[wp.methods[method_sel]](wp.method_opts[wp.methods[method_sel]][opt_sel], f, hm, hb, d*pltf) for d in range(1, 200)]) #opt, f, hm, hb, d
 
         imgui.end()
 

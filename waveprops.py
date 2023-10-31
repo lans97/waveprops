@@ -3,7 +3,8 @@ c = 299792458
 
 methods = ["okumura", "hata", "siu", "hata_extension", "walfisch_ikegami", "longley_rice", "free_space", "two_ray_ground", "okumura_hata", "erikson9999"]
 
-def okumura():
+
+def okumura(opt, f, hm, hb, d):
     return 0
 
 def hata(opt, f, hm, hb, d):
@@ -27,22 +28,22 @@ def h_a(opt, f, hm):
 
 h_opts = ["urbanS", "urbanM", "urbanL", "suburban", "open"]
 
-def siu():
+def siu(opt, f, hm, hb, d):
     return 0
 
-def hata_extension():
+def hata_extension(opt, f, hm, hb, d):
     return 0
 
-def walfisch_ikegami():
+def walfisch_ikegami(opt, f, hm, hb, d):
     return 0
 
-def longley_rice():
+def longley_rice(opt, f, hm, hb, d):
     return 0
 
-def free_space():
+def free_space(opt, f, hm, hb, d):
     return 0
 
-def two_ray_ground():
+def two_ray_ground(opt, f, hm, hb, d):
     return 0
 
 def okumura_hata(opt, f, hm, hb, d):
@@ -75,5 +76,8 @@ def oh_a_Urban(hm, f):
 
 oh_opts = ["suburban", "urban", "rural", "open"]
 
-def erikson9999():
+def erikson9999(opt, f, hm, hb, d):
     return 0
+
+method_opts = {"okumura": [""], "hata": h_opts, "siu": [""], "hata_extension": [""], "walfisch_ikegami": [""], "longley_rice": [""], "free_space": [""], "two_ray_ground": [""], "okumura_hata": oh_opts, "erikson9999": [""]}
+method_func = {"okumura": okumura, "hata": hata, "siu": siu, "hata_extension": hata_extension, "walfisch_ikegami": walfisch_ikegami, "longley_rice": longley_rice, "free_space": free_space, "two_ray_ground": two_ray_ground, "okumura_hata": okumura_hata, "erikson9999": erikson9999}
